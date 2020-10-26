@@ -71,6 +71,16 @@ func returnSingleBooking(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(booking)
 }
 
+func deleteBooking(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["id"]
+	var booking Booking
+	db.Where("id = ?", key).Delete(&booking)
+
+	fmt.Println("Endpoint Hit: Delete Booking No:", key)
+	json.NewEncoder(w).Encode(booking)
+}
+
 func handleRequests() {
 	log.Println("Starting development server at http://127.0.0.1:10000/")
 	log.Println("Quit the server with CONTROL-C.")
@@ -81,6 +91,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/all-bookings", returnAllBookings)
 	myRouter.HandleFunc("/booking/{id}", returnSingleBooking)
 	myRouter.HandleFunc("/update-booking/{id}", updateBooking).Methods("PUT")
+	myRouter.HandleFunc("/delete-booking/{id}", deleteBooking).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
